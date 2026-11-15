@@ -1,0 +1,63 @@
+{
+  "name": "@canvas-glide/qwik",
+  "version": "1.0.0",
+  "description": "Qwik components and hook for canvas-glide: pan, zoom and pinch-to-zoom for images or any content, with signals for the transform and server-rendering-safe props.",
+  "keywords": [
+    "qwik",
+    "qwikcity",
+    "qwik-component",
+    "resumable",
+    "pan-zoom",
+    "panzoom",
+    "pinch-zoom",
+    "pinch-to-zoom",
+    "zoom",
+    "pan",
+    "image-viewer",
+    "image-zoom",
+    "canvas",
+    "gestures",
+    "touch",
+    "typescript"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/canvas-glide.qwik.mjs",
+  "qwik": "./dist/canvas-glide.qwik.mjs",
+  "types": "./dist/canvas-glide.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/canvas-glide.d.ts",
+      "import": "./dist/canvas-glide.qwik.mjs",
+      "require": "./dist/canvas-glide.qwik.cjs"
+    }
+  },
+  "scripts": {
+    "check": "tsc -b",
+    "build": "tsc -b && vite build --mode lib",
+    "build:dev": "tsc -b && vite build --mode lib --watch",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "canvas-glide": "^1.0.1"
+  },
+  "peerDependencies": {
+    "@builder.io/qwik": "^1.2.0"
+  },
+  "devDependencies": {
+    "@builder.io/qwik": "^1.20.0",
+    "@types/node": "^24.13.3",
+    "canvas-glide": "../lib",
+    "jsdom": "^31.0.1",
+    "typescript": "~6.0.2",
+    "vite": "^7.1.0",
+    "vite-plugin-dts": "^5.0.3",
+    "vitest": "^5.1.0"
+  }
+}
