@@ -21,6 +21,14 @@
     "typescript"
   ],
   "license": "MIT",
+  "homepage": "https://github.com/vrtexe/canvas-glide-qwik#readme",
+  "bugs": {
+    "url": "https://github.com/vrtexe/canvas-glide-qwik/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vrtexe/canvas-glide-qwik.git"
+  },
   "publishConfig": {
     "access": "public"
   },
