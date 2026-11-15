@@ -53,7 +53,6 @@
   "devDependencies": {
     "@builder.io/qwik": "^1.20.0",
     "@types/node": "^24.13.3",
-    "canvas-glide": "../lib",
     "jsdom": "^31.0.1",
     "typescript": "~6.0.2",
     "vite": "^7.1.0",

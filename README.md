@@ -114,7 +114,7 @@ The image and HTML renderers load PNG, JPEG, GIF, WebP, AVIF and BMP through a `
 
 ## Development
 
-`canvas-glide` is listed twice: `^1.0.1` in `dependencies` for consumers, and `../lib` in `devDependencies`, which npm links during local development. Build `lib` first, then:
+`canvas-glide` comes from npm; to work against an unreleased engine, build it and run `npm link ../lib` (the path to a local `canvas-glide` checkout), and `npm install` restores the published version. The usual commands:
 
 ```sh
 npm install
@@ -123,6 +123,8 @@ npm run build
 ```
 
 `npm test` runs the Vitest suite in `test/` in jsdom; it covers the engine wiring and the drawing, not the components. `npm run build` type-checks with `tsc -b` and writes `dist/` with the Qwik optimizer in library mode: `canvas-glide.qwik.mjs`, `canvas-glide.qwik.cjs` and the type declarations. The `.qwik.` infix tells the optimizer of a consuming app to process the package. The demo app lives in the sibling `qwik-usage` folder.
+
+Publishing a GitHub release runs `.github/workflows/npm-publish.yml`: it tests and builds the tag, sets `package.json` on the default branch to the release version, and stages the package on npm with trusted publishing; `npm stage approve` publishes it.
 
 ## License
 
