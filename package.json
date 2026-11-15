@@ -1,6 +1,6 @@
 {
   "name": "@canvas-glide/qwik",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Qwik components and hook for canvas-glide: pan, zoom and pinch-to-zoom for images or any content, with signals for the transform and server-rendering-safe props.",
   "keywords": [
     "qwik",
