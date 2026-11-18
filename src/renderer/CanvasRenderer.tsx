@@ -2,11 +2,12 @@ import { component$, noSerialize, useSignal, useVisibleTask$, type NoSerialize }
 import type { Glide } from '../glide.ts';
 import { drawImage } from '../util/draw.ts';
 import { createImageBitmapSafe } from '../util/image.ts';
-import { fitInto } from '../util/size.ts';
+import { fitContent } from '../util/size.ts';
 
 export const CanvasRenderer = component$<{ glide: Glide; image?: Blob | null }>((props) => {
   const canvas = useSignal<HTMLCanvasElement>();
   const bitmap = useSignal<NoSerialize<ImageBitmap>>();
+  const fitPending = useSignal(false);
 
   // A new image is fitted once; a resize keeps the view and only updates the content size.
   useVisibleTask$(
@@ -22,17 +23,16 @@ export const CanvasRenderer = component$<{ glide: Glide; image?: Blob | null }>(
       }
 
       bitmap.value?.close();
+      fitPending.value = !!loaded;
       bitmap.value = loaded ? noSerialize(loaded) : undefined;
-      props.glide.contentSize.value = loaded && fitInto(props.glide.viewportSize.value, loaded);
-      if (loaded) props.glide.engine.value?.fit();
     },
     { strategy: 'document-ready' },
   );
 
   useVisibleTask$(({ track }) => {
-    const viewportSize = track(() => props.glide.viewportSize.value);
+    track(() => props.glide.viewportSize.value);
     const loaded = track(() => bitmap.value);
-    props.glide.contentSize.value = loaded ? fitInto(viewportSize, loaded) : null;
+    fitPending.value = fitContent(props.glide, loaded ?? null, fitPending.value);
   });
 
   useVisibleTask$(({ track }) => {

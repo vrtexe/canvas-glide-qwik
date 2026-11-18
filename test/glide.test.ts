@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 import { afterEach, test } from "vitest";
 import assert from "node:assert/strict";
-import type { Signal } from "@builder.io/qwik";
+import type { NoSerialize, Signal } from "@builder.io/qwik";
+import type { CanvasEngine } from "canvas-glide";
 import { attachGlide, type GlideOptions, type GlideSignals } from "../src/glide.ts";
 import { drawImage } from "../src/util/draw.ts";
+import { fitContent } from "../src/util/size.ts";
 
 // jsdom has no ResizeObserver, no pointer capture and no 2D context.
 globalThis.ResizeObserver ??= class {
@@ -121,4 +123,39 @@ test("the backing store follows devicePixelRatio", () => {
 
   assert.equal(canvas.width, 2000);
   assert.equal(canvas.height, 1400);
+});
+
+function fitTarget(viewportSize = { width: 0, height: 0 }) {
+  const fits: { width: number; height: number }[] = [];
+  const glide = {
+    viewportSize: signal(viewportSize),
+    contentSize: signal<{ width: number; height: number } | null>(null),
+    engine: signal({ fit: () => fits.push({ ...glide.viewportSize.value }) } as unknown as NoSerialize<CanvasEngine>),
+  };
+  return { glide, fits };
+}
+
+test("an image loaded before the viewport has a size is fitted once it gets one, a later resize keeps the view", () => {
+  const { glide, fits } = fitTarget();
+  const image = { width: 400, height: 300 };
+
+  let pending = fitContent(glide, image, true);
+  assert.deepEqual(fits, []);
+
+  glide.viewportSize.value = { width: 800, height: 600 };
+  pending = fitContent(glide, image, pending);
+  assert.deepEqual(fits, [{ width: 800, height: 600 }]);
+  assert.deepEqual(glide.contentSize.value, { width: 800, height: 600 });
+
+  glide.viewportSize.value = { width: 400, height: 600 };
+  fitContent(glide, image, pending);
+  assert.deepEqual(fits, [{ width: 800, height: 600 }]);
+  assert.deepEqual(glide.contentSize.value, { width: 400, height: 300 });
+});
+
+test("an image loaded into a sized viewport is fitted at once", () => {
+  const { glide, fits } = fitTarget({ width: 800, height: 600 });
+
+  assert.equal(fitContent(glide, { width: 400, height: 300 }, true), false);
+  assert.deepEqual(fits, [{ width: 800, height: 600 }]);
 });
