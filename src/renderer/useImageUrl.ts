@@ -2,12 +2,13 @@ import { useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import type { Glide } from '../glide.ts';
 import { naturalSizeOf } from '../util/draw.ts';
 import { createImageUrlSafe, revokeImageUrl } from '../util/image.ts';
-import { fitInto, type Size } from '../util/size.ts';
+import { fitContent, type Size } from '../util/size.ts';
 
 /** The URL and natural size of the image for the img-based renderers; a new image is fitted once, a resize keeps the view. */
 export function useImageUrl(props: { glide: Glide; image?: Blob | null }) {
   const src = useSignal<string>();
   const natural = useSignal<Size | null>(null);
+  const fitPending = useSignal(false);
 
   useVisibleTask$(
     async ({ track, cleanup }) => {
@@ -30,17 +31,16 @@ export function useImageUrl(props: { glide: Glide; image?: Blob | null }) {
       const size = url ? await naturalSizeOf(url) : null;
       if (!current) return;
 
+      fitPending.value = !!size;
       natural.value = size;
-      props.glide.contentSize.value = size && fitInto(props.glide.viewportSize.value, size);
-      if (size) props.glide.engine.value?.fit();
     },
     { strategy: 'document-ready' },
   );
 
   useVisibleTask$(({ track }) => {
-    const viewportSize = track(() => props.glide.viewportSize.value);
+    track(() => props.glide.viewportSize.value);
     const size = track(() => natural.value);
-    props.glide.contentSize.value = size && fitInto(viewportSize, size);
+    fitPending.value = fitContent(props.glide, size, fitPending.value);
   });
 
   return { src, natural };
